@@ -1,6 +1,6 @@
 {
   "name": "@yct/schedule",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "schedule",
   "license": "MIT",
   "repository": "",
@@ -30,6 +30,7 @@
     "watch:test": "jest --watch"
   },
   "dependencies": {
+    "moment": "^2.18.1"
   },
   "devDependencies": {
     "@types/jest": "^20.0.5",
