@@ -1,4 +1,5 @@
 import * as moment from 'moment';
+import { IEvent } from './schedule';
 
 export class Calendar {
   public selected: ICalendarItem;
@@ -18,6 +19,7 @@ export interface ICalendarItem {
   available: boolean;
   type: 'prev' | 'current' | 'next';
   selected: boolean;
+  events?: IEvent[];
 }
 
 // export interface ICalendarEvent {
