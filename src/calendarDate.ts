@@ -1,17 +1,22 @@
-export class CalendarDate {
-  public selected: ICalendarHour;
-  constructor(public hours: ICalendarHour[]) {}
+import * as moment from 'moment';
+import { IEvent } from './schedule';
 
-  public select(hour: ICalendarHour): void {
-    for (const i of this.hours) {
-      i.selected = false;
+export class CalendarDate {
+    public selected: ICalendarHour;
+    constructor(public hours: ICalendarHour[]) { }
+
+    public select(hour: ICalendarHour): void {
+        for (const i of this.hours) {
+            i.selected = false;
+        }
+        hour.selected = true;
+        this.selected = hour;
     }
-    hour.selected = true;
-    this.selected = hour;
-  }
 }
 
 export interface ICalendarHour {
-  available: boolean;
-  selected: boolean;
+    date: moment.Moment;
+    available: boolean;
+    selected: boolean;
+    event?: IEvent;
 }

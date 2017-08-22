@@ -4,9 +4,9 @@ import { Calendar, CalendarDate, ICalendarHour, ICalendarItem } from './';
 export class Schedule {
   public rules: IRules;
   public events: IEvent[];
-  constructor(rules?: IRules, events?: IEvent[]) {
+  constructor(rules: IRules, events?: IEvent[]) {
     this.rules = rules;
-    this.events = events;
+    this.events = events || [];
   }
 
   public presentCurrentMonth() {
@@ -90,6 +90,9 @@ export class Schedule {
           if (item) item.available = x.rule.some(x => x.available);
         });
     }
+    for (let item of items) {
+      item.events = this.events.filter(x => x.date.isSame(item.date, 'date'));
+    }
     return new Calendar(items);
   }
 
@@ -99,9 +102,14 @@ export class Schedule {
 
   public presentDate(date: Date | moment.Moment | string) {
     const m = moment(date).hour(0).minute(0).second(0).millisecond(0);
-    const hours: ICalendarHour[] = Array(24).fill({
-      available: false,
-      selected: false,
+    const hours: ICalendarHour[] = Array(24).fill(0)
+    .map((x, y) => x + y)
+    .map((x: number): ICalendarHour => {
+      return {
+        date: moment(m).hour(x),
+        available: false,
+        selected: false,
+      };
     });
     if (this.rules.daily) {
       for (let i = 0; i < hours.length; i++) {
@@ -121,6 +129,9 @@ export class Schedule {
           hours[i].available = date.rule[i].available;
         }
       }
+    }
+    for (let hour of hours) {
+      hour.event = this.events.find(x => x.date.isSame(hour.date, 'hour'));
     }
     return new CalendarDate(hours);
   }
@@ -151,5 +162,5 @@ export interface IDateRuleItem {
 export interface IEvent {
   date: moment.Moment;
   name: string;
-  detail: string;
+  detail?: string;
 }
