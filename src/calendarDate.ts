@@ -1,3 +1,6 @@
+import * as moment from 'moment';
+import { IEvent } from './schedule';
+
 export class CalendarDate {
   public selected: ICalendarHour;
   constructor(public hours: ICalendarHour[]) {}
@@ -12,6 +15,8 @@ export class CalendarDate {
 }
 
 export interface ICalendarHour {
+  date: moment.Moment;
   available: boolean;
   selected: boolean;
+  event?: IEvent;
 }

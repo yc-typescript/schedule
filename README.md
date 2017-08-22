@@ -1,34 +1,129 @@
-[![Build Status](https://travis-ci.org/{{github-user-name}}/{{github-app-name}}.svg?branch=master)](https://travis-ci.org/{{github-user-name}}/{{github-app-name}}.svg?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/{{github-user-name}}/{{github-app-name}}/badge.svg?branch=master)](https://coveralls.io/github/{{github-user-name}}/{{github-app-name}}?branch=master)
+[![Build Status](https://travis-ci.org/yc-typescript/schedule.svg?branch=master)](https://travis-ci.org/yc-typescript/schedule.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/yc-typescript/schedule/badge.svg?branch=master)](https://coveralls.io/github/yc-typescript/schedule?branch=master)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-# Using this module in other modules
+# Installation
 
-Here is a quick example of how this module can be used in other modules. The [TypeScript Module Resolution Logic](https://www.typescriptlang.org/docs/handbook/module-resolution.html) makes it quite easy. The file `src/index.ts` is a [barrel](https://basarat.gitbooks.io/typescript/content/docs/tips/barrel.html) that re-exports selected exports from other files. The _package.json_ file contains `main` attribute that points to the generated `lib/index.js` file and `typings` attribute that points to the generated `lib/index.d.ts` file.
+```bash
+npm i -S @yct/schedule
+```
 
-> If you are planning to have code in multiple files (which is quite natural for a NodeJS module) that users can import, make sure you update `src/index.ts` file appropriately.
+or
 
-Now assuming you have published this amazing module to _npm_ with the name `my-amazing-lib`, and installed it in the module in which you need it -
+```bash
+yarn add @yct/schedule
+```
 
-- To use the `Greeter` class in a TypeScript file -
+# Usage
 
 ```ts
-import { Greeter } from "my-amazing-lib";
+import { 
+  IEvent,
+  IRules,
+  Schedule 
+} from '@yct/schedule';
 
-const greeter = new Greeter("World!");
-greeter.greet();
+const rules: IRules = ... // rules
+const events: IEvent[] = ... // events
+const schedule = new Schedule(rules, events);
+
 ```
 
-- To use the `Greeter` class in a JavaScript file -
+## Rules
+There are 3 different types of rules.
 
-```js
-const Greeter = require('my-amazing-lib').Greeter;
+- daily rule
+- weekly rule
+- date rule
 
-const greeter = new Greeter('World!');
-greeter.greet();
+Priority: daily < weekly < date
+
+> Daily rule example
+available from 9am to 5pm
+```ts
+  const dailyRule: IDailyRule = Array(24).fill(0)
+  .map((x, y) => x + y)
+  .map(x: IRuleItem => {
+    return {
+      available: x >= 9 && x < 17,
+    };
+  });
+  const rules: IRules = {
+    daily: dailyRule,
+  };
 ```
 
-## Setting travis and coveralls badges
-1. Sign in to [travis](https://travis-ci.org/) and activate the build for your project.
-2. Sign in to [coveralls](https://coveralls.io/) and activate the build for your project.
-3. Replace {{github-user-name}}/{{github-app-name}} with your repo details like: "ospatil/generator-node-typescript".
+> Weekly rule example
+weekdays available
+```ts
+  const nonAvailableDay = Array(24).fill({
+    available: false
+  });
+  const weekdaysRule: IWeeklyRule = Array(5).fill(dailyRule);
+  const weeklyRules: IWeeklyRule = [].concat(nonAvailableDay, weekdaysRule, nonAvailableDay)
+  const rules: IRules = {
+    weekly: weeklyRule,
+  };
+```
+
+> Date rule example
+bank holiday
+```ts
+import * as moment from 'moment';
+
+const r: IRules = {
+  date: [
+    {
+      date: moment('...'), // date of a bank holiday
+      rule: Array(24).fill({
+        available: false
+      })
+    }
+  ]
+};
+```
+
+## Events
+```ts
+import * as moment from 'moment';
+
+const events: IEvent[] = [
+  {
+    date: moment().hour(0).minute(0).second(0).millisecond(0),
+    name: 'test event',
+    detail: 'just a test',
+  },
+  {
+    date: moment().hour(1).minute(0).second(0).millisecond(0),
+    name: 'another test event',
+    detail: 'just a test',
+  },
+];
+```
+
+## Schedule methods and properties
+```ts
+public rules: IRules;
+public events: IEvent[];
+
+public presentCurrentMonth(): Calendar;
+public presentMonth(date: Date | moment.Moment | string): Calendar;
+public presentCurrentDate(): CalendarDate;
+public presentDate(date: Date | moment.Moment | string): CalendarDate;
+```
+
+## Calendar methods and properties
+```ts
+public items: ICalendarItem[];
+public selected: ICalendarItem;
+
+public select(item: ICalendarItem): void;
+```
+
+## CalendarDate methods and properties
+```ts
+public hours: ICalendarHour[];
+public selected: ICalendarHour;
+
+public select(hour: ICalendarHour): void;
+```
