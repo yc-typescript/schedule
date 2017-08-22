@@ -15,13 +15,13 @@ const events: IEvent[] = [
   {
     date: moment().hour(0).minute(0).second(0).millisecond(0),
     name: 'test event',
-    detail: 'just a test'
+    detail: 'just a test',
   },
   {
     date: moment().hour(1).minute(0).second(0).millisecond(0),
     name: 'another test event',
-    detail: 'just a test'
-  }
+    detail: 'just a test',
+  },
 ];
 
 test('Should schedule with daily rule', () => {
@@ -41,8 +41,8 @@ test('Should schedule with daily rule', () => {
   expect(calendar.selected).toBe(calendar.items[0]);
   expect(calendar.selected.selected).toBe(true);
   const calendarEvents: IEvent[] = calendar.items
-  .map(x => x.events)
-  .reduce((a: IEvent[], b: IEvent[]): IEvent[] => a.concat(b), []);
+    .map(x => x.events)
+    .reduce((a: IEvent[], b: IEvent[]): IEvent[] => a.concat(b), []);
   expect(calendarEvents.length).toBe(2);
   const calendarDate: CalendarDate = schedule.presentCurrentDate();
   expect(calendarDate.hours.map(x => x.available)).toEqual(
