@@ -102,3 +102,30 @@ test('Should schedule with a date rule', () => {
     Array(24).fill(true)
   );
 });
+
+test('Should schedule with a date not in the period', () => {
+  const next = moment().add(1, 'month');
+  const dateRule: IDateRule = [
+    {
+      date: next,
+      rule: Array(24).fill(0).map((y: any): IRuleItem => {
+        return {
+          available: true,
+        };
+      }),
+    },
+  ];
+  const rules: IRules = {
+    date: dateRule,
+  };
+  const schedule = new Schedule(rules);
+  const calendar: Calendar = schedule.presentCurrentMonth();
+  const item = calendar.items.find(x => x.date.isSame(next, 'day'));
+  expect(item).toBeFalsy();
+  const toBe = Array(42).fill(false);
+  expect(calendar.items.map(x => x.available)).toMatchObject(toBe);
+  const calendarDate: CalendarDate = schedule.presentCurrentDate();
+  expect(calendarDate.hours.map(x => x.available)).toEqual(
+    Array(24).fill(false)
+  );
+});
