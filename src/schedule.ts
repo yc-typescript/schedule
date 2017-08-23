@@ -87,7 +87,7 @@ export class Schedule {
         })
         .forEach(x => {
           const item = items.find(y => y.date.isSame(x.date, 'day'));
-          if (item) item.available = x.rule.some(x => x.available);
+          item.available = x.rule.some(x => x.available);
         });
     }
     for (const item of items) {
